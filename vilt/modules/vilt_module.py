@@ -29,13 +29,13 @@ class ViLTransformerSS(pl.LightningModule):
         self.token_type_embeddings = nn.Embedding(2, config["hidden_size"])
         self.token_type_embeddings.apply(objectives.init_weights)
 
-        if self.hparams.config["load_path"] == "":
-            self.transformer = getattr(vit, self.hparams.config["vit"])(
-                pretrained=True, config=self.hparams.config
-            )
-        else:
-            self.transformer = getattr(vit, self.hparams.config["vit"])(
-                pretrained=False, config=self.hparams.config
+        # if self.hparams.config["load_path"] == "":
+        #     self.transformer = getattr(vit, self.hparams.config["vit"])(
+        #         pretrained=True, config=self.hparams.config
+        #     )
+        # else:
+        self.transformer = getattr(vit, self.hparams.config["vit"])(
+            pretrained=False, config=self.hparams.config
             )
 
         self.pooler = heads.Pooler(config["hidden_size"])
@@ -122,13 +122,13 @@ class ViLTransformerSS(pl.LightningModule):
             imgkey = "image"
 
         do_mlm = "_mlm" if mask_text else ""
-        text_ids = batch[f"text_ids{do_mlm}"]
-        text_labels = batch[f"text_labels{do_mlm}"]
-        text_masks = batch[f"text_masks"]
+        text_ids = batch[f"question_ids{do_mlm}"]
+        text_labels = batch[f"question_labels{do_mlm}"]
+        text_masks = batch[f"question_masks"]
         text_embeds = self.text_embeddings(text_ids)
 
         if image_embeds is None and image_masks is None:
-            img = batch[imgkey][0]
+            img = batch[imgkey]
             (
                 image_embeds,
                 image_masks,

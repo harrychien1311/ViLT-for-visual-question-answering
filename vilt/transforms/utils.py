@@ -21,8 +21,10 @@ class MinMaxResize:
             neww = neww * scale
 
         newh, neww = int(newh + 0.5), int(neww + 0.5)
-        newh, neww = newh // 32 * 32, neww // 32 * 32
-
+        # newh, neww = newh // 32 * 32, neww // 32 * 32
+        if newh != 512:
+            #newh=512
+            print(f"newh: {newh}, neww:{neww}")
         return x.resize((neww, newh), resample=Image.BICUBIC)
 
 

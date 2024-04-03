@@ -305,12 +305,12 @@ def compute_vqa(pl_module, batch):
         len(vqa_logits), pl_module.hparams.config["vqav2_label_size"]
     ).to(pl_module.device)
 
-    vqa_labels = batch["vqa_labels"]
-    vqa_scores = batch["vqa_scores"]
+    vqa_labels = batch["vqa_answer"]
+    #vqa_scores = batch["vqa_scores"]
 
-    for i, (_label, _score) in enumerate(zip(vqa_labels, vqa_scores)):
-        for l, s in zip(_label, _score):
-            vqa_targets[i, l] = s
+    for i, _label in enumerate(vqa_labels):
+        _label = int(_label.item())
+        vqa_targets[i, _label] = 1
 
     vqa_loss = (
         F.binary_cross_entropy_with_logits(vqa_logits, vqa_targets)
@@ -322,16 +322,15 @@ def compute_vqa(pl_module, batch):
         "vqa_logits": vqa_logits,
         "vqa_targets": vqa_targets,
         "vqa_labels": vqa_labels,
-        "vqa_scores": vqa_scores,
     }
 
     phase = "train" if pl_module.training else "val"
     loss = getattr(pl_module, f"{phase}_vqa_loss")(ret["vqa_loss"])
-    score = getattr(pl_module, f"{phase}_vqa_score")(
-        ret["vqa_logits"], ret["vqa_targets"]
-    )
+    # score = getattr(pl_module, f"{phase}_vqa_score")(
+    #     ret["vqa_logits"], ret["vqa_targets"]
+    # )
     pl_module.log(f"vqa/{phase}/loss", loss)
-    pl_module.log(f"vqa/{phase}/score", score)
+    #pl_module.log(f"vqa/{phase}/score", score)
 
     return ret
 

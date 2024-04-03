@@ -15,7 +15,14 @@ def pixelbert_transform(size=800):
             inception_normalize,
         ]
     )
-
+def normal_transform(size=800):
+    return transforms.Compose(
+        [
+            transforms.Resize((size,size)),
+            transforms.ToTensor(),
+            inception_normalize,
+        ]
+    )
 
 def pixelbert_transform_randaug(size=800):
     longer = int((1333 / 800) * size)

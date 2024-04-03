@@ -12,3 +12,8 @@ result
 weights/
 scripts/
 demos/
+root/
+Annotations.zip
+train.zip
+val.zip
+test.zip

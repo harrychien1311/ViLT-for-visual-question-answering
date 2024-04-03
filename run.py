@@ -4,7 +4,7 @@ import pytorch_lightning as pl
 
 from vilt.config import ex
 from vilt.modules import ViLTransformerSS
-from vilt.datamodules.multitask_datamodule import MTDataModule
+from vilt.datamodules.vqa_datamodule import VQADataModule
 
 
 @ex.automain
@@ -12,7 +12,7 @@ def main(_config):
     _config = copy.deepcopy(_config)
     pl.seed_everything(_config["seed"])
 
-    dm = MTDataModule(_config, dist=True)
+    dm = VQADataModule(_config)
 
     model = ViLTransformerSS(_config)
     exp_name = f'{_config["exp_name"]}'
@@ -58,7 +58,7 @@ def main(_config):
         logger=logger,
         prepare_data_per_node=False,
         replace_sampler_ddp=False,
-        accumulate_grad_batches=grad_steps,
+        accumulate_grad_batches=1,
         log_every_n_steps=10,
         flush_logs_every_n_steps=10,
         resume_from_checkpoint=_config["resume_from"],
